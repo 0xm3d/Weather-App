@@ -1,12 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weather App</title>
+
+    <title>Morocco Weather</title>
+
     <link rel="stylesheet" href="src/style.css">
 </head>
+
 <body>
-    <h1 class="bg-red-400">Fuck World</h1>
+
+    <header class="bg-emerald-300 w-full h-20">
+        <h1 class="text-2xl font-bold p-6">
+            Morocco Weather
+        </h1>
+    </header>
+
+    <main class="w-full">
+
+        <section class="w-full p-8">
+
+            <div class="w-full max-w-xl mx-auto">
+
+                <h2 class="text-3xl font-bold mb-6">
+                    Search for a Moroccan city
+                </h2>
+
+                <div class="flex gap-2">
+
+                    <input
+                        type="search"
+                        id="search"
+                        name="search"
+                        placeholder="Enter a city, e.g. Nador"
+                        class="border border-gray-300 rounded-lg p-3 w-full"
+                    >
+
+                    <button
+                        type="button"
+                        id="search-button"
+                        class="bg-emerald-500 text-white px-5 py-3 rounded-lg"
+                    >
+                        Search
+                    </button>
+
+                </div>
+
+                <p id="loading" class="hidden mt-4">
+                    Loading...
+                </p>
+
+                <p id="error-msg" class="hidden mt-4 text-red-600">
+                </p>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <script src="src/main.js" type="module"></script>
+
 </body>
+
 </html>
