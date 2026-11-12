@@ -1,69 +1,59 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>Morocco Weather</title>
 
-    <link rel="stylesheet" href="src/style.css">
-</head>
+    <link rel="stylesheet" href="src/style.css" />
+  </head>
 
-<body>
+  <body>
+    <div class="app-shell">
+      <header class="site-header">
+        <div class="brand-wrap">
+          <span class="brand-mark">☀️</span>
+          <h1>Weather Hub</h1>
+        </div>
+      </header>
 
-    <header class="bg-emerald-300 w-full h-20">
-        <h1 class="text-2xl font-bold p-6">
-            Morocco Weather
-        </h1>
-    </header>
-
-    <main class="w-full">
-
-        <section class="w-full p-8">
-
-            <div class="w-full max-w-xl mx-auto">
-
-                <h2 class="text-3xl font-bold mb-6">
-                    Search for a Moroccan city
-                </h2>
-
-                <div class="flex gap-2">
-
-                    <input
-                        type="search"
-                        id="search"
-                        name="search"
-                        placeholder="Enter a city, e.g. Nador"
-                        class="border border-gray-300 rounded-lg p-3 w-full"
-                    >
-
-                    <button
-                        type="button"
-                        id="search-button"
-                        class="bg-emerald-500 text-white px-5 py-3 rounded-lg"
-                    >
-                        Search
-                    </button>
-
-                </div>
-
-                <p id="loading" class="hidden mt-4">
-                    Loading...
-                </p>
-
-                <p id="error-msg" class="hidden mt-4 text-red-600">
-                </p>
-
+      <main class="page-shell">
+        <section class="search-section">
+          <div class="search-panel">
+            <div class="search-header">
+              <p class="eyebrow">Live forecast</p>
+              <h2>Search for a Moroccan city</h2>
             </div>
-            <div id="weather-container"></div>
 
+            <div class="search-controls">
+              <input
+                type="search"
+                id="search"
+                name="search"
+                placeholder="Enter a city, e.g. Nador"
+              />
+
+              <button type="button" id="search-button">Search</button>
+            </div>
+
+            <p id="loading" class="hidden mt-4">Loading...</p>
+            <p id="error-msg" class="hidden mt-4 text-red-600"></p>
+          </div>
+
+          <div id="weather-container" class="weather-grid" aria-live="polite"></div>
         </section>
 
-    </main>
+        <section class="forecast-section">
+          <div class="section-title-row">
+            <h2>5-Day Forecast</h2>
+          </div>
+
+          <div id="forecast-container" class="forecast-grid" aria-live="polite"></div>
+        </section>
+      </main>
+    </div>
 
     <script src="src/main.js" type="module"></script>
-
-</body>
-
+  </body>
 </html>
