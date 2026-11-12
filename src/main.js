@@ -14,8 +14,9 @@ async function getCity(city) {
 
   const response = await fetch(url);
 
+  // Check if the city search API is unavailable
   if (!response.ok) {
-    throw new Error("City search failed.");
+    throw new Error("CITY_SEARCH_ERROR");
   }
 
   const data = await response.json();
@@ -29,8 +30,14 @@ async function getWeather(latitude, longitude) {
 
   const response = await fetch(url);
 
+  // Check if the API quota was reached
+  if (response.status === 429) {
+    throw new Error("QUOTA_ERROR");
+  }
+
+  // Check if the weather API is unavailable
   if (!response.ok) {
-    throw new Error("Weather request failed.");
+    throw new Error("WEATHER_API_ERROR");
   }
 
   const data = await response.json();
@@ -170,12 +177,15 @@ searchButton.addEventListener("click", async function () {
 
   // Check if the search is empty
   if (city === "") {
-    errorMsg.textContent = "You can't search for nothing";
+    errorMsg.textContent = "Please enter a city name.";
     errorMsg.classList.remove("hidden");
     return;
   }
 
+  // Hide previous error
   errorMsg.classList.add("hidden");
+
+  // Show loading
   loading.classList.remove("hidden");
   searchButton.disabled = true;
 
@@ -183,8 +193,9 @@ searchButton.addEventListener("click", async function () {
     // Find the city
     const cities = await getCity(city);
 
+    // Check if the city exists
     if (cities.length === 0) {
-      throw new Error("City not found.");
+      throw new Error("CITY_NOT_FOUND");
     }
 
     const cityData = cities[0];
@@ -253,18 +264,31 @@ searchButton.addEventListener("click", async function () {
     // Display all five forecast cards
     forecastContainer.replaceChildren(...forecastCards);
   } catch (error) {
-    // Show error message
-    errorMsg.textContent =
-      error.message === "City not found."
-        ? "City not found."
-        : "Something went wrong. Please try again.";
+    // Show a clear message depending on the error
+    if (error.message === "CITY_NOT_FOUND") {
+      errorMsg.textContent = "City not found. Please check the spelling.";
+    } else if (error.message === "CITY_SEARCH_ERROR") {
+      errorMsg.textContent =
+        "The city search service is unavailable. Please try again later.";
+    } else if (error.message === "QUOTA_ERROR") {
+      errorMsg.textContent = "Too many requests. Please try again later.";
+    } else if (error.message === "WEATHER_API_ERROR") {
+      errorMsg.textContent =
+        "The weather service is unavailable. Please try again later.";
+    } else {
+      errorMsg.textContent = "Something went wrong. Please try again.";
+    }
 
+    // Show the error message
     errorMsg.classList.remove("hidden");
 
+    // Show the error in the console for debugging
     console.error("API request failed:", error);
   } finally {
     // Stop loading
     loading.classList.add("hidden");
+
+    // Allow the user to search again
     searchButton.disabled = false;
   }
 });
