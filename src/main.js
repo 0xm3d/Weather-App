@@ -1,12 +1,18 @@
 import "./style.css";
 import { WEATHER_CODES } from "./codes.js";
 
+// Get HTML elements
 const search = document.getElementById("search");
 const searchButton = document.getElementById("search-button");
 const loading = document.getElementById("loading");
 const errorMsg = document.getElementById("error-msg");
+
 const weatherContainer = document.getElementById("weather-container");
 const forecastContainer = document.getElementById("forecast-container");
+
+const cityButtons = document.querySelectorAll(".city-suggestion");
+
+console.log("Main.js is working");
 
 // Search for a city
 async function getCity(city) {
@@ -14,7 +20,10 @@ async function getCity(city) {
 
   const response = await fetch(url);
 
-  // Check if the city search API is unavailable
+  if (response.status === 429) {
+    throw new Error("QUOTA_ERROR");
+  }
+
   if (!response.ok) {
     throw new Error("CITY_SEARCH_ERROR");
   }
@@ -24,18 +33,16 @@ async function getCity(city) {
   return data.results || [];
 }
 
-// Get current weather and forecast
+// Get weather information
 async function getWeather(latitude, longitude) {
   const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,wind_speed_10m_max&forecast_days=5&timezone=auto`;
 
   const response = await fetch(url);
 
-  // Check if the API quota was reached
   if (response.status === 429) {
     throw new Error("QUOTA_ERROR");
   }
 
-  // Check if the weather API is unavailable
   if (!response.ok) {
     throw new Error("WEATHER_API_ERROR");
   }
@@ -56,44 +63,35 @@ function createWeatherCard(
 ) {
   const card = document.createElement("div");
 
-  card.className = `
-    max-w-xl mx-auto mt-8
-    bg-[#eee] rounded-2xl shadow-lg
-    border border-gray-100
-    p-6 sm:p-8
-    transition duration-300
-    hover:shadow-xl
-  `;
+  card.className =
+    "max-w-xl mx-auto mt-8 bg-[#eee] rounded-2xl shadow-lg border border-gray-100 p-6 sm:p-8 transition duration-300 hover:shadow-xl";
 
   const cityName = document.createElement("h2");
   cityName.className = "text-2xl font-bold text-gray-800";
   cityName.textContent = city;
 
   const weatherIcon = document.createElement("p");
-  weatherIcon.className = "text-7xl my-5";
+  weatherIcon.className = "text-6xl mt-4";
   weatherIcon.textContent = icon;
 
   const temp = document.createElement("p");
-  temp.className = "text-5xl font-bold text-emerald-600";
-  temp.textContent = `${temperature ?? "—"}°C`;
+  temp.className = "text-5xl font-bold text-gray-800 mt-2";
+  temp.textContent = `${Math.round(temperature)}°C`;
 
   const weatherDescription = document.createElement("p");
-  weatherDescription.className = "text-lg text-gray-500 mt-2";
+  weatherDescription.className = "text-gray-500 mt-2";
   weatherDescription.textContent = description;
 
   const details = document.createElement("div");
-  details.className = `
-    grid grid-cols-2 gap-4 mt-8
-    border-t border-gray-100 pt-6
-  `;
+  details.className = "grid grid-cols-2 gap-4 mt-6";
 
-  const humidityInfo = document.createElement("div");
-  humidityInfo.className = "bg-blue-50 rounded-xl p-4";
-  humidityInfo.textContent = `Humidity ${humidity ?? "—"}%`;
+  const humidityInfo = document.createElement("p");
+  humidityInfo.className = "text-blue-600 font-medium";
+  humidityInfo.textContent = `💧 Humidity: ${humidity}%`;
 
-  const windInfo = document.createElement("div");
-  windInfo.className = "bg-emerald-50 rounded-xl p-4";
-  windInfo.textContent = `Wind ${wind ?? "—"} km/h`;
+  const windInfo = document.createElement("p");
+  windInfo.className = "text-emerald-600 font-medium";
+  windInfo.textContent = `💨 Wind: ${wind} km/h`;
 
   details.append(humidityInfo, windInfo);
 
@@ -114,16 +112,11 @@ function createForecastCard(
 ) {
   const card = document.createElement("div");
 
-  card.className = `
-    bg-[#eee] rounded-2xl shadow-lg
-    border border-gray-100
-    p-5
-    transition duration-300
-    hover:shadow-xl
-  `;
+  card.className =
+    "bg-[#eee] rounded-2xl shadow-lg border border-gray-100 p-5 transition duration-300 hover:shadow-xl";
 
   const forecastDate = document.createElement("h3");
-  forecastDate.className = "text-lg font-bold text-gray-800";
+  forecastDate.className = "font-bold text-gray-800";
 
   forecastDate.textContent = new Date(date + "T12:00:00").toLocaleDateString(
     "en-US",
@@ -135,44 +128,39 @@ function createForecastCard(
   );
 
   const weatherIcon = document.createElement("p");
-  weatherIcon.className = "text-6xl my-5 text-center";
+  weatherIcon.className = "text-4xl my-4";
   weatherIcon.textContent = icon;
 
-  const temp = document.createElement("p");
-  temp.className = "text-3xl font-bold text-emerald-600 text-center";
-  temp.textContent = `${maxTemp ?? "—"}°C`;
-
   const weatherDescription = document.createElement("p");
-  weatherDescription.className = "text-lg text-gray-500 text-center mt-2";
+  weatherDescription.className = "text-gray-500 text-sm";
   weatherDescription.textContent = description;
 
-  const details = document.createElement("div");
-  details.className = `
-    grid grid-cols-2 gap-3 mt-6
-    border-t border-gray-100 pt-5
-  `;
+  const temperatures = document.createElement("p");
+  temperatures.className = "font-bold text-gray-800 mt-4";
+  temperatures.textContent = `${Math.round(maxTemp)}° / ${Math.round(minTemp)}°`;
 
-  const minTemperature = document.createElement("div");
-  minTemperature.className = "bg-blue-50 rounded-xl p-3";
-  minTemperature.textContent = `Min ${minTemp ?? "—"}°C`;
+  const rain = document.createElement("p");
+  rain.className = "text-blue-600 text-sm mt-3";
+  rain.textContent = `🌧️ Rain: ${rainProbability ?? "—"}%`;
 
-  const rainInfo = document.createElement("div");
-  rainInfo.className = "bg-emerald-50 rounded-xl p-3";
-  rainInfo.textContent = `Rain ${rainProbability ?? "—"}%`;
+  const wind = document.createElement("p");
+  wind.className = "text-emerald-600 text-sm mt-2";
+  wind.textContent = `💨 Wind: ${windSpeed} km/h`;
 
-  const windInfo = document.createElement("div");
-  windInfo.className = "bg-emerald-50 rounded-xl p-3 col-span-2";
-  windInfo.textContent = `Wind ${windSpeed ?? "—"} km/h`;
-
-  details.append(minTemperature, rainInfo, windInfo);
-
-  card.append(forecastDate, weatherIcon, temp, weatherDescription, details);
+  card.append(
+    forecastDate,
+    weatherIcon,
+    weatherDescription,
+    temperatures,
+    rain,
+    wind,
+  );
 
   return card;
 }
 
-// Search button
-searchButton.addEventListener("click", async function () {
+// Search weather
+async function searchWeather() {
   const city = search.value.trim();
 
   // Check if the search is empty
@@ -182,56 +170,48 @@ searchButton.addEventListener("click", async function () {
     return;
   }
 
-  // Hide previous error
+  // Show loading message
   errorMsg.classList.add("hidden");
-
-  // Show loading
   loading.classList.remove("hidden");
   searchButton.disabled = true;
 
   try {
-    // Find the city
+    // Get city information
     const cities = await getCity(city);
 
-    // Check if the city exists
     if (cities.length === 0) {
       throw new Error("CITY_NOT_FOUND");
     }
 
     const cityData = cities[0];
 
-    // Get weather data
+    // Get weather information
     const weather = await getWeather(cityData.latitude, cityData.longitude);
 
-    // Get today's weather
-    const temperature = weather.current.temperature_2m;
-    const humidity = weather.current.relative_humidity_2m;
-    const wind = weather.current.wind_speed_10m;
-    const weatherCode = weather.current.weather_code;
+    if (!weather.current || !weather.daily) {
+      throw new Error("WEATHER_API_ERROR");
+    }
+
+    const current = weather.current;
+    const daily = weather.daily;
 
     // Get weather description and icon
-    const condition = WEATHER_CODES[weatherCode] || {
+    const currentWeather = WEATHER_CODES[current.weather_code] || {
       label: "Unknown conditions",
       icon: "❔",
     };
 
-    // Create today's weather card
-    const card = createWeatherCard(
-      cityData.name,
-      temperature,
-      condition.label,
-      condition.icon,
-      humidity,
-      wind,
+    // Create current weather card
+    const currentCard = createWeatherCard(
+      `${cityData.name}, ${cityData.country}`,
+      current.temperature_2m,
+      currentWeather.label,
+      currentWeather.icon,
+      current.relative_humidity_2m,
+      current.wind_speed_10m,
     );
 
-    // Display today's weather
-    weatherContainer.replaceChildren(card);
-
-    // Get daily forecast data
-    const daily = weather.daily;
-
-    // Transform all five days into objects
+    // Transform the five forecast days into objects
     const forecastDays = daily.time.map((date, index) => {
       return {
         date: date,
@@ -243,9 +223,9 @@ searchButton.addEventListener("click", async function () {
       };
     });
 
-    // Create forecast cards
+    // Create the five forecast cards
     const forecastCards = forecastDays.map((day) => {
-      const condition = WEATHER_CODES[day.weatherCode] || {
+      const forecastWeather = WEATHER_CODES[day.weatherCode] || {
         label: "Unknown conditions",
         icon: "❔",
       };
@@ -254,17 +234,19 @@ searchButton.addEventListener("click", async function () {
         day.date,
         day.maxTemp,
         day.minTemp,
-        condition.label,
-        condition.icon,
+        forecastWeather.label,
+        forecastWeather.icon,
         day.rainProbability,
         day.windSpeed,
       );
     });
 
-    // Display all five forecast cards
+    // Display the cards
+    weatherContainer.replaceChildren(currentCard);
     forecastContainer.replaceChildren(...forecastCards);
   } catch (error) {
-    // Show a clear message depending on the error
+    console.log(error);
+
     if (error.message === "CITY_NOT_FOUND") {
       errorMsg.textContent = "City not found. Please check the spelling.";
     } else if (error.message === "CITY_SEARCH_ERROR") {
@@ -275,20 +257,35 @@ searchButton.addEventListener("click", async function () {
     } else if (error.message === "WEATHER_API_ERROR") {
       errorMsg.textContent =
         "The weather service is unavailable. Please try again later.";
+    } else if (error instanceof TypeError) {
+      errorMsg.textContent =
+        "Unable to connect. Please check your internet connection.";
     } else {
       errorMsg.textContent = "Something went wrong. Please try again.";
     }
 
-    // Show the error message
     errorMsg.classList.remove("hidden");
-
-    // Show the error in the console for debugging
-    console.error("API request failed:", error);
   } finally {
-    // Stop loading
+    // Hide loading and enable the search button
     loading.classList.add("hidden");
-
-    // Allow the user to search again
     searchButton.disabled = false;
   }
+}
+
+// Search when clicking the button
+searchButton.addEventListener("click", searchWeather);
+
+// Search when pressing Enter
+search.addEventListener("keydown", function (event) {
+  if (event.key === "Enter") {
+    searchWeather();
+  }
+});
+
+// Search when clicking a suggested city
+cityButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    search.value = button.dataset.city;
+    searchWeather();
+  });
 });
