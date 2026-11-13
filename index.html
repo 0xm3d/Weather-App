@@ -1,59 +1,220 @@
+
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <title>Morocco Weather</title>
-
-    <link rel="stylesheet" href="src/style.css" />
+    <meta
+      name="description"
+      content="Discover current weather conditions and a five-day forecast for your city."
+    />
+    <title>Weather Hub | Your Weather Dashboard</title>
   </head>
 
-  <body>
-    <div class="app-shell">
-      <header class="site-header">
-        <div class="brand-wrap">
-          <span class="brand-mark">☀️</span>
-          <h1>Weather Hub</h1>
+  <body class="min-h-screen bg-[#eee] text-slate-800 antialiased">
+
+    <!-- Header -->
+    <header class="max-w-7xl mx-auto px-5 py-6">
+      <div class="flex items-center justify-between">
+        <a href="#" class="flex items-center gap-2">
+          <span class="text-3xl">🌤️</span>
+          <span class="text-xl font-bold text-slate-800">
+            Weather Hub
+          </span>
+        </a>
+
+        <span class="text-sm text-slate-500 hidden sm:block">
+          Your daily weather companion
+        </span>
+      </div>
+    </header>
+
+    <!-- Main content -->
+    <main class="max-w-7xl mx-auto px-5 pb-16">
+
+      <!-- Hero section -->
+      <section
+        id="hero"
+        class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-sky-900 to-cyan-800 text-white px-6 py-14 sm:px-12 sm:py-20 text-center"
+      >
+        <div class="relative z-10 max-w-2xl mx-auto">
+
+
+          <h1 class="text-4xl sm:text-5xl font-bold leading-tight">
+            Your weather,
+            <span class="text-sky-300">at a glance.</span>
+          </h1>
+
+          <p class="mt-5 text-slate-300 text-base sm:text-lg leading-relaxed">
+            Discover current weather conditions and the
+            five-day forecast for your favorite city.
+          </p>
+
+          <!-- Search form -->
+          <div class="mt-10 flex flex-col sm:flex-row gap-3 max-w-xl mx-auto">
+
+            <input
+              id="search"
+              type="text"
+              placeholder="Search a city, e.g. Nador..."
+              aria-label="City name"
+              class="flex-1 min-w-0 rounded-xl bg-white px-5 py-4 text-slate-800 placeholder:text-slate-400 outline-none focus:ring-4 focus:ring-sky-300/40"
+            />
+
+            <button
+              id="search-button"
+              type="button"
+              class="rounded-xl bg-sky-500 hover:bg-sky-400 text-white font-semibold px-7 py-4 transition duration-200 disabled:opacity-50"
+            >
+              Search
+            </button>
+
+          </div>
+
+          <!-- Error message -->
+          <p
+            id="error-msg"
+            role="alert"
+            aria-live="polite"
+            class="hidden mt-4 rounded-xl bg-red-500/15 border border-red-300/30 px-4 py-3 text-red-100 text-sm"
+          ></p>
+
+          <!-- Loading -->
+          <p
+            id="loading"
+            role="status"
+            aria-live="polite"
+            class="hidden mt-5 text-sky-100"
+          >
+            Loading weather data...
+          </p>
+
+          <!-- Suggested cities -->
+          <div class="mt-8">
+            <p class="text-sm text-slate-300 mb-3">
+              Popular Moroccan cities
+            </p>
+
+            <div class="flex flex-wrap justify-center gap-2">
+              <button
+                type="button"
+                class="city-suggestion rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm hover:bg-white/20 transition"
+                data-city="Nador"
+              >
+                Nador
+              </button>
+
+              <button
+                type="button"
+                class="city-suggestion rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm hover:bg-white/20 transition"
+                data-city="Casablanca"
+              >
+                Casablanca
+              </button>
+
+              <button
+                type="button"
+                class="city-suggestion rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm hover:bg-white/20 transition"
+                data-city="Rabat"
+              >
+                Rabat
+              </button>
+
+              <button
+                type="button"
+                class="city-suggestion rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm hover:bg-white/20 transition"
+                data-city="Tangier"
+              >
+                Tangier
+              </button>
+            </div>
+          </div>
+
         </div>
-      </header>
 
-      <main class="page-shell">
-        <section class="search-section">
-          <div class="search-panel">
-            <div class="search-header">
-              <p class="eyebrow">Live forecast</p>
-              <h2>Search for a Moroccan city</h2>
-            </div>
+        <!-- Decorative circles -->
+        <div
+          class="absolute -top-24 -right-24 w-72 h-72 rounded-full bg-sky-400/10 blur-3xl"
+        ></div>
 
-            <div class="search-controls">
-              <input
-                type="search"
-                id="search"
-                name="search"
-                placeholder="Enter a city, e.g. Nador"
-              />
+        <div
+          class="absolute -bottom-32 -left-20 w-80 h-80 rounded-full bg-cyan-400/10 blur-3xl"
+        ></div>
+      </section>
 
-              <button type="button" id="search-button">Search</button>
-            </div>
+      <!-- Weather results -->
+      <section id="weather-container" aria-live="polite"></section>
 
-            <p id="loading" class="hidden mt-4">Loading...</p>
-            <p id="error-msg" class="hidden mt-4 text-red-600"></p>
+      <!-- Forecast -->
+      <section class="mt-14">
+        <div class="flex items-center justify-between mb-6">
+          <div>
+            <h2 class="text-2xl font-bold text-slate-800">
+              5-Day Forecast
+            </h2>
+            <p class="text-slate-500 mt-1 text-sm">
+              Plan your next five days.
+            </p>
+          </div>
+          <span class="text-2xl">📅</span>
+        </div>
+
+        <div
+          id="forecast-container"
+          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4"
+        ></div>
+      </section>
+
+      <!-- Features -->
+      <section class="mt-16">
+        <div class="text-center mb-8">
+          <h2 class="text-2xl font-bold">
+            Everything you need to know
+          </h2>
+          <p class="text-slate-500 mt-2">
+            Simple weather information to help plan your day.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+
+          <div class="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm">
+            <div class="text-3xl mb-4">🌤️</div>
+            <h3 class="font-bold text-lg">Current Weather</h3>
+            <p class="text-slate-500 text-sm mt-2 leading-relaxed">
+              Check the current temperature and weather conditions
+              in your city.
+            </p>
           </div>
 
-          <div id="weather-container" class="weather-grid" aria-live="polite"></div>
-        </section>
-
-        <section class="forecast-section">
-          <div class="section-title-row">
-            <h2>5-Day Forecast</h2>
+          <div class="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm">
+            <div class="text-3xl mb-4">📅</div>
+            <h3 class="font-bold text-lg">5-Day Forecast</h3>
+            <p class="text-slate-500 text-sm mt-2 leading-relaxed">
+              See upcoming temperatures and weather conditions
+              for the next five days.
+            </p>
           </div>
 
-          <div id="forecast-container" class="forecast-grid" aria-live="polite"></div>
-        </section>
-      </main>
-    </div>
+          <div class="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm">
+            <div class="text-3xl mb-4">💧</div>
+            <h3 class="font-bold text-lg">Weather Details</h3>
+            <p class="text-slate-500 text-sm mt-2 leading-relaxed">
+              Get useful information about humidity, rain
+              probability and wind speed.
+            </p>
+          </div>
 
-    <script src="src/main.js" type="module"></script>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-200 py-6 text-center text-sm text-slate-500">
+      <p>Weather Hub · Powered by Open-Meteo</p>
+    </footer>
+
+    <script type="module" src="/src/main.js"></script>
   </body>
 </html>
